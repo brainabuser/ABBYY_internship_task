@@ -23,6 +23,6 @@ images = [make_noise(image, m) for m in modes]
 
 if __name__ == '__main__':
     for i, img in enumerate(images):
-        plt.subplot(240 + i + 1), plt.imshow(img), plt.title(modes[i])
+        plt.subplot(241 + i), plt.imshow(img), plt.title(modes[i])
     # plt.show()
     plt.savefig(pic_dir + 'noised_' + pic_name)
