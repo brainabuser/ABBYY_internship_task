@@ -1,28 +1,25 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 
-import numpy as np
+from pdf2image import convert_from_path
 
-from matplotlib import pyplot as plt
-from skimage.util import random_noise
+png_dir = 'png/'
+pdf_dir = 'pdf/'
+filtered_dir = 'filtered_tiff/'
+img_name = 'nature'
 
+# Save converted image in png/ dir
+convert_from_path(f'{pdf_dir}{img_name}.pdf')[0] \
+    .save(f'{png_dir}{img_name}.png')
 
-def make_noise(image, mode):
-    array = np.array(image)
-    noised_array = random_noise(array, mode=mode, seed=None, clip=None)
-    return Image.fromarray((noised_array * 255).astype(np.uint8))
+image = Image.open(f'{png_dir}{img_name}.png')
 
+# To reduce the number of rows below
+im_f = ImageFilter
+filters = [im_f.CONTOUR, im_f.BLUR, im_f.EMBOSS, im_f.EDGE_ENHANCE, im_f.EDGE_ENHANCE_MORE]
 
-pic_dir = 'pics/'
-pic_name = 'bear.jpg'
+filtered_images = [image.filter(f) for f in filters]
 
-image = Image.open(pic_dir + pic_name)
-
-modes = ['gaussian', 's&p', 'localvar', 'poisson', 'salt', 'pepper', 'speckle']
-
-images = [make_noise(image, m) for m in modes]
-
+# Save filtered images to .tif doc
 if __name__ == '__main__':
-    for i, img in enumerate(images):
-        plt.subplot(241 + i), plt.imshow(img), plt.title(modes[i])
-    # plt.show()
-    plt.savefig(pic_dir + 'noised_' + pic_name)
+    filtered_images[0].save(f'{filtered_dir}{img_name}.tif', compression='tiff_deflate',
+                            save_all=True, append_images=filtered_images[1:])
